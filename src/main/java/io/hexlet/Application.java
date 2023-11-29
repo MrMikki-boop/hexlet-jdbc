@@ -26,6 +26,29 @@ public class Application {
                     System.out.println(resultSet.getString("phone"));
                 }
             }
+
+            var sqlInsert = "INSERT INTO users (username, phone) VALUES (?, ?)";
+            try (var preparedStatementInsert = conn.prepareStatement(sqlInsert)) {
+                // Добавьте пользователей
+                preparedStatementInsert.setString(1, "Alice");
+                preparedStatementInsert.setString(2, "111111111");
+                preparedStatementInsert.executeUpdate();
+
+                preparedStatementInsert.setString(1, "Bob");
+                preparedStatementInsert.setString(2, "222222222");
+                preparedStatementInsert.executeUpdate();
+
+                preparedStatementInsert.setString(1, "Charlie");
+                preparedStatementInsert.setString(2, "333333333");
+                preparedStatementInsert.executeUpdate();
+            }
+
+            var sqlDelete = "DELETE FROM users WHERE username = ?";
+            try (var preparedStatementDelete = conn.prepareStatement(sqlDelete)) {
+                // Удалите пользователя по имени
+                preparedStatementDelete.setString(1, "Bob");
+                preparedStatementDelete.executeUpdate();
+            }
         }
     }
 }
