@@ -5,50 +5,24 @@ import java.sql.SQLException;
 
 public class Application {
     public static void main(String[] args) throws SQLException {
-        // Соединение с базой данных тоже нужно отслеживать
         try (var conn = DriverManager.getConnection("jdbc:h2:mem:hexlet_test")) {
+            var userDAO = new UserDAO(conn);
 
-            var sql = "CREATE TABLE users (id BIGINT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255), phone VARCHAR(255))";
-            try (var statement = conn.createStatement()) {
-                statement.execute(sql);
-            }
+            var alice = new User("Alice", "111111111");
+            userDAO.save(alice);
 
-            var sql2 = "INSERT INTO users (username, phone) VALUES ('tommy', '123456789')";
-            try (var statement2 = conn.createStatement()) {
-                statement2.executeUpdate(sql2);
-            }
+            var bob = new User("Bob", "222222222");
+            userDAO.save(bob);
 
-            var sql3 = "SELECT * FROM users";
-            try (var statement3 = conn.createStatement()) {
-                var resultSet = statement3.executeQuery(sql3);
-                while (resultSet.next()) {
-                    System.out.println(resultSet.getString("username"));
-                    System.out.println(resultSet.getString("phone"));
-                }
-            }
+            var charlie = new User("Charlie", "333333333");
+            userDAO.save(charlie);
 
-            var sqlInsert = "INSERT INTO users (username, phone) VALUES (?, ?)";
-            try (var preparedStatementInsert = conn.prepareStatement(sqlInsert)) {
-                // Добавьте пользователей
-                preparedStatementInsert.setString(1, "Alice");
-                preparedStatementInsert.setString(2, "111111111");
-                preparedStatementInsert.executeUpdate();
+            userDAO.findAll().forEach(user -> {
+                System.out.println(user.getUsername());
+                System.out.println(user.getPhone());
+            });
 
-                preparedStatementInsert.setString(1, "Bob");
-                preparedStatementInsert.setString(2, "222222222");
-                preparedStatementInsert.executeUpdate();
-
-                preparedStatementInsert.setString(1, "Charlie");
-                preparedStatementInsert.setString(2, "333333333");
-                preparedStatementInsert.executeUpdate();
-            }
-
-            var sqlDelete = "DELETE FROM users WHERE username = ?";
-            try (var preparedStatementDelete = conn.prepareStatement(sqlDelete)) {
-                // Удалите пользователя по имени
-                preparedStatementDelete.setString(1, "Bob");
-                preparedStatementDelete.executeUpdate();
-            }
+            userDAO.delete(bob.getId());
         }
     }
 }
