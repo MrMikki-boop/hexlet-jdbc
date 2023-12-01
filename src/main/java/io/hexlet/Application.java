@@ -22,6 +22,13 @@ public class Application {
                 System.out.println(user.getPhone());
             });
 
+            var foundUser = userDAO.findById(bob.getId());
+            foundUser.ifPresent(user -> {
+                System.out.println("Found user:");
+                System.out.println(user.getUsername());
+                System.out.println(user.getPhone());
+            });
+
             userDAO.delete(bob.getId());
         }
     }
